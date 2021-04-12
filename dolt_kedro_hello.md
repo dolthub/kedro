@@ -177,7 +177,8 @@ Exceptions:
     Pyarrow versions)
 stricter 
 
-5. 
+5. Other
+
 Dolt is capable of AS OF queries -> `scooters.load(commit="abcd")`.
 This conflicts with Kedro's versioniing system, and is my biggest
 unanswered after finishing this demo.
