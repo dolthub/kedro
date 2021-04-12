@@ -143,7 +143,7 @@ and reproducibility:
 >
 dolt sql -q "show create table kedro_meta"
 +------------+----------------------------------------------------------+
-| Table      | Create Table                                                                                                                                                                                                                                                                         |
+| Table      | Create                                                   |
 +------------+----------------------------------------------------------+
 | kedro_meta | CREATE TABLE `kedro_meta` (
   `kind` text NOT NULL,
