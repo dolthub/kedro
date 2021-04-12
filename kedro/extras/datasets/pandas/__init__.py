@@ -30,6 +30,7 @@
 
 __all__ = [
     "CSVDataSet",
+    "DoltDataSet",
     "ExcelDataSet",
     "FeatherDataSet",
     "GBQTableDataSet",
@@ -46,6 +47,8 @@ from contextlib import suppress
 
 with suppress(ImportError):
     from .csv_dataset import CSVDataSet  # NOQA
+with suppress(ImportError):
+    from .dolt_dataset import DoltDataSet  # NOQA
 with suppress(ImportError):
     from .excel_dataset import ExcelDataSet  # NOQA
 with suppress(ImportError):
