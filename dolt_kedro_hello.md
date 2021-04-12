@@ -31,12 +31,12 @@ Query OK, 1 row affected
 ## Inspect Pipeline File
 
 New `DataSet`:
-```bash
+```python
 from kedro.extras.datasets.pandas import DoltDataSet
 ```
 
 Dolt data source and target:
-```bash
+```python
 # Prepare a data catalog
 scooters = DoltDataSet(
     filepath="mydoltdb",
@@ -55,7 +55,7 @@ data_catalog = DataCatalog({
 ```
 
 Nodes:
-```bash
+```python
 # Prepare first node
 def load_scooters(before_scooters):
     new_row = {"pk": '1', "name": "Jeffrey", "gear": "binoculars"}
@@ -74,7 +74,7 @@ get_names_node = node(
 ```
 
 Pipeline:
-```bash
+```python
 # Assemble nodes into a pipeline
 pipeline = Pipeline([mutate_scooters_node, get_names_node])
 
