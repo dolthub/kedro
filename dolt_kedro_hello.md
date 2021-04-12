@@ -183,3 +183,65 @@ Dolt is capable of AS OF queries -> `scooters.load(commit="abcd")`.
 This conflicts with Kedro's versioniing system, and is my biggest
 unanswered after finishing this demo.
 
+Diffing example:
+```bash
+> dolt diff 86r618rclkj7evq1hbqiv834tcc9v5kh --summary
+diff --dolt a/kedro_meta b/kedro_meta
+--- a/kedro_meta @ 174535lv59ire5g1bnuulb1h301mh1a0
++++ b/kedro_meta @ hd77oruasheudetedrqmb12kglcii1sh
+1 Row Unmodified (100.00%)
+5 Rows Added (500.00%)
+0 Rows Deleted (0.00%)
+0 Rows Modified (0.00%)
+0 Cells Modified (0.00%)
+(1 Entry vs 6 Entries)
+
+diff --dolt a/scooters b/scooters
+--- a/scooters @ b6bl1pjchrjbt2c0nkjf4atis7es28t1
++++ b/scooters @ 6u0nkt54q6njplr1vft2e2oj8vqv0lv4
+1 Row Unmodified (100.00%)
+1 Row Added (100.00%)
+0 Rows Deleted (0.00%)
+0 Rows Modified (0.00%)
+0 Cells Modified (0.00%)
+(1 Entry vs 2 Entries)
+```
+
+How does configuration change for SQL-server connection? (i.e. not local
+folder, remote database like `root@localhost:scooters`.)
+
+Server:
+```bash
+> dolt sql-server -l trace
+Starting server with Config HP="localhost:3306"|U="root"|P=""|T="28800000"|R="false"|L="trace"
+```
+```python
+# Prepare a data catalog
+scooters = DoltDataSet(
+    uri="root@localhost/scooters", # not implemented
+    tablename="scooters",
+    index=["pk"],
+    meta_config=dict(
+        filepath="mydoltdb",
+        tablename="kedro_meta",
+    )
+```
+
+Join tables within a database -- inter-database joins
+would require adding DoltDB changes to our roadmap:
+```bash
+> dolt sql -q "
+  select *
+    from dolt_history_scooters as h
+    join kedro_meta k
+      on h.commit_hash = k.commit limit 5;"
++----+---------+------------+----------------------------------+-----------------+-----------------------------------+------+----------------------------------+-----------+------------+------------+
+| pk | name    | gear       | commit_hash                      | committer       | commit_date                       | kind | commit                           | tablename | timestamp  | session_id |
++----+---------+------------+----------------------------------+-----------------+-----------------------------------+------+----------------------------------+-----------+------------+------------+
+| 0  | Razor   | knee-pads  | 407j2r9ke638dmq400dd1jihmoofki27 | Bojack Horseman | 2021-04-12 21:24:44.384 +0000 UTC | save | 407j2r9ke638dmq400dd1jihmoofki27 | scooters  | 1618262684 | Ellipsis   |
+| 0  | Razor   | knee-pads  | ob9hmrapstcaag6q4b1g1uhhhprb4n1h | Bojack Horseman | 2021-04-12 21:18:12.05 +0000 UTC  | load | ob9hmrapstcaag6q4b1g1uhhhprb4n1h | scooters  | 1618262684 | Ellipsis   |
+| 1  | Jeffrey | binoculars | 407j2r9ke638dmq400dd1jihmoofki27 | Bojack Horseman | 2021-04-12 21:24:44.384 +0000 UTC | save | 407j2r9ke638dmq400dd1jihmoofki27 | scooters  | 1618262684 | Ellipsis   |
+| 1  | Jeffrey | binoculars | ob9hmrapstcaag6q4b1g1uhhhprb4n1h | Bojack Horseman | 2021-04-12 21:18:12.05 +0000 UTC  | load | ob9hmrapstcaag6q4b1g1uhhhprb4n1h | scooters  | 1618262684 | Ellipsis   |
+| 0  | Razor   | knee-pads  | 29b755hep1rvppg8re5kca2dlstso7nj | Bojack Horseman | 2021-04-12 21:18:11.531 +0000 UTC | save | 29b755hep1rvppg8re5kca2dlstso7nj | scooters  | 1618262291 | Ellipsis   |
++----+---------+------------+----------------------------------+-----------------+-----------------------------------+------+----------------------------------+-----------+------------+------------+
+```
